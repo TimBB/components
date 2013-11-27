@@ -34,7 +34,8 @@ class public DataProvider
     field protected BBjString           ConnMode$
     field public    DataRow             EntityClass!                = new DataRow()
 
-
+    field public java.lang.Boolean DebugPrint! = java.lang.Boolean.FALSE
+    
     rem /**
     rem * Method addPrimaryKeySegment:
     rem * add a primary key segment
@@ -187,13 +188,17 @@ class public DataProvider
                 sel! = #ControllerFilter!.get(var$)
 
                 if sel! = null() then
-                    print "sel! = null() for var$=",var$
+                    if #DebugPrint! then
+                        print "sel! = null() for var$=",var$
+                    fi
                     wh$="1=2"
                     break
                 fi
 
                 if sel!.size()=0 then
-                    print "sel!.size()=0 for var$=",var$
+                    if #DebugPrint! then
+                        print "sel!.size()=0 for var$=",var$
+                    fi
                     wh$="1=2"
                     break
                 fi
@@ -299,9 +304,9 @@ class public DataProvider
 
                 stmt! = #Connection!.createStatement(java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE, java.sql.ResultSet.CONCUR_READ_ONLY)
                 #JDBCResultSet! = cast(java.sql.ResultSet,stmt!.executeQuery(sql$))
-
-                print sql$
-
+                if #DebugPrint! then
+                    print sql$
+                fi
                 if #JDBCResultSet!.next() then
                     size = #JDBCResultSet!.getInt("COUNT")
                 else
@@ -405,6 +410,7 @@ class public DataProvider
 
                 case default
                 row!.setFieldValue(col_name$,"")
+                
                 print col_name$," unkown/unmapped type ",col_type
                 break
             swend
@@ -442,9 +448,9 @@ class public DataProvider
         if pos("1=2"=sql$)=0 then
             stmt! = #Connection!.createStatement(java.sql.ResultSet.TYPE_SCROLL_SENSITIVE, java.sql.ResultSet.CONCUR_READ_ONLY)
             #JDBCResultSet! = cast(java.sql.ResultSet,stmt!.executeQuery(sql$))
-
-            print sql$
-
+            if #DebugPrint! then
+                print sql$
+            fi
             if #JDBCResultSet!.absolute(first) then
                 while #ResultSet!.size() < first-1
                     #ResultSet!.addItem(null())
@@ -589,11 +595,13 @@ class public DataProvider
                 #Size=0
             fi
         else
-            print "empty result set where was 1=2"
+            if #DebugPrint! then
+                print "empty result set where was 1=2"
+            fi
             v! = new BBjVector()
             #Size = 0
         fi
-        print
+        rem print
 
         #closeDatabase()
 
@@ -796,8 +804,9 @@ class public DataProvider
 
         stmt! = #Connection!.createStatement(java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE, java.sql.ResultSet.CONCUR_READ_ONLY)
         #JDBCResultSet! = cast(java.sql.ResultSet,stmt!.executeQuery(sql$))
-        print sql$
-
+        if #DebugPrint! then
+            print sql$
+        fi
         tm! = new java.util.TreeMap()
 
         while #JDBCResultSet!.next()
@@ -868,8 +877,9 @@ class public DataProvider
         v$=v$(2)
 
         sql$="INSERT INTO "+#PrimaryTable$+" ("+s$+") VALUES ("+v$+")"
-        print sql$
-
+        if #DebugPrint! then
+            print sql$
+        fi
 
         #openDatabase()
         declare java.sql.PreparedStatement stmt!
@@ -973,7 +983,9 @@ class public DataProvider
 
 
         sql$="UPDATE "+#PrimaryTable$+" SET "+s$+" WHERE "+wh$
-        print sql$
+        if #DebugPrint! then
+            print sql$
+        fi
 
         #openDatabase()
         declare java.sql.PreparedStatement stmt!
@@ -1085,7 +1097,9 @@ class public DataProvider
 
 
             sql$="DELETE FROM "+#PrimaryTable$+" WHERE "+wh$
-            print sql$
+            if #DebugPrint! then
+                print sql$
+            fi
 
             #openDatabase()
             stmt! = #Connection!.createStatement()

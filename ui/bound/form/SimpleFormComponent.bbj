@@ -43,6 +43,8 @@ class public SimpleFormComponent extends UIComponent implements UIWidget
     field private java.util.HashMap RestoreControllerFilter!
 
     field private BBjNumber ReadOnly
+    
+    field public java.lang.Boolean DebugPrint! = java.lang.Boolean.FALSE
 
 
     rem /**
@@ -258,7 +260,9 @@ class public SimpleFormComponent extends UIComponent implements UIWidget
         fi
 
         #EditedFields!.put(ev!.getControl().getName(),null())
-        print ev!.getControl().getName(),"-> null()"
+        if #DebugPrint! then
+            print ev!.getControl().getName(),"-> null()"
+        fi
         rem put null() to mark that the field has gained the focus. lostFocus will then asynchronously collect the data
 
     methodend
@@ -292,7 +296,9 @@ class public SimpleFormComponent extends UIComponent implements UIWidget
                 #this!.markValidationErrors()
             else
                 #EditedFields!.remove(ctrl_name$)
-                print ctrl_name$,"-> deleted"
+                if #DebugPrint! then
+                    print ctrl_name$,"-> deleted"
+                fi
             fi
         fi
 
@@ -627,7 +633,7 @@ class public SimpleFormComponent extends UIComponent implements UIWidget
                     goto default_set
                 fi
             break
-
+            
             case BBjControl.CHECKBOX_TYPE
                 ctrl!.setSelected(#Rec!.getFieldAsNumber(ctrl_name$))
             break
@@ -650,6 +656,7 @@ class public SimpleFormComponent extends UIComponent implements UIWidget
 
             case default
             default_set:
+
             ctrl!.setText(cvs(contents$,2))
             break
         swend
@@ -790,7 +797,9 @@ class public SimpleFormComponent extends UIComponent implements UIWidget
                     ctrl! = ControlMap!.get("ControlInstance")
                     ctrl!.setText(fixvalue$)
                      #EditedFields!.put(ctrl_name$,fixvalue$)
-                     print ctrl_name$," ->",fixvalue$,"(fix)"
+                     if #DebugPrint! then
+                        print ctrl_name$," ->",fixvalue$,"(fix)"
+                     fi
                 fi
             wend
         fi
