@@ -36,6 +36,19 @@ class public DataProvider
 
     field public java.lang.Boolean DebugPrint! = java.lang.Boolean.FALSE
     
+    field private BBjString              Where$                      = ""
+    
+    rem /**
+    rem * Method setWhere:
+    rem * sets a fixed where clause, other filters, set by drive, will be ignored 
+    rem * @param BBjString whereClause$
+    rem */
+    method public void setWhere(BBjString whereClause$)
+
+        #Where$= whereClause$
+
+    methodend
+    
     rem /**
     rem * Method addPrimaryKeySegment:
     rem * add a primary key segment
@@ -230,6 +243,10 @@ class public DataProvider
             wend
         fi
 
+        rem Feste Where-Bedingung verwenden
+        if len(#Where$) > 0 then
+            wh$ = #Where$
+        fi
         rem if #ControllerFilter
 
         if wh$>"" then
@@ -239,9 +256,17 @@ class public DataProvider
                 sql$=sql$(1,w+5)+" "+wh$+" AND ("+sql$(w+6)+")"
             else
                 if pos("ORDER BY"=cvs(sql$,4))=0 then
-                    sql$=sql$ + " WHERE "+wh$
+                    if pos("WHERE"=cvs(wh$,4)) = 0 then
+                        sql$=sql$ + " WHERE "+wh$
+                    else
+                         sql$=sql$ + " "+wh$
+                    fi
                 else
-                    sql$=sql$(1,pos("ORDER BY"=cvs(sql$,4))-1)+" WHERE "+wh$+" "+sql$(pos("ORDER BY"=cvs(sql$,4)))
+                    if pos("WHERE"=cvs(wh$,4)) = 0 then
+                        sql$=sql$(1,pos("ORDER BY"=cvs(sql$,4))-1)+" WHERE "+wh$+" "+sql$(pos("ORDER BY"=cvs(sql$,4)))
+                    else
+                        sql$=sql$(1,pos("ORDER BY"=cvs(sql$,4))-1)+" "+wh$+" "+sql$(pos("ORDER BY"=cvs(sql$,4)))
+                    fi                  
                 fi
             fi
         fi

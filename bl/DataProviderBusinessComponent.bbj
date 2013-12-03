@@ -18,6 +18,17 @@ use ::components/db/DataProvider.bbj::DataProvider
 class public DataProviderBusinessComponent extends BusinessComponent
 
     rem /**
+    rem * Method setWhere:
+    rem * sets a fixed where clause, other filters, set by drive, will be ignored 
+    rem * @param BBjString whereClause$ 
+    rem */
+    method public void setWhere(BBjString whereClause$)
+
+        #getDataProvider().setWhere(whereClause$)
+
+    methodend
+
+    rem /**
     rem * Method getDistinctValues:
     rem * returns distinct values in a given column of the resultset
     rem * these values are mainly used for filterin purpose
@@ -125,6 +136,8 @@ class public DataProviderBusinessComponent extends BusinessComponent
     rem * reset all controller filter (set by drive)
     rem */
     method public void resetdrive()
+
+        #getDataProvider().setWhere("")
 
         kf! = #super!.getControllerFilter().clone()
         ks! = kf!.keySet()
